@@ -119,6 +119,9 @@
     "symfony/security": {
         "version": "v4.2.2"
     },
+    "symfony/stopwatch": {
+        "version": "v4.2.8"
+    },
     "symfony/var-exporter": {
         "version": "v4.2.2"
     },
