@@ -237,6 +237,18 @@
     "symfony/security": {
         "version": "v4.2.2"
     },
+    "symfony/security-bundle": {
+        "version": "3.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "3.3",
+            "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
+        },
+        "files": [
+            "config/packages/security.yaml"
+        ]
+    },
     "symfony/stopwatch": {
         "version": "v4.2.8"
     },
