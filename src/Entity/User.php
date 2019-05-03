@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Groups;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 /**
@@ -33,11 +34,17 @@ class User implements UserInterface
      */
     private $password;
 
+    /**
+     * @Groups({"user"})
+     */
     public function getId(): ?int
     {
         return $this->id;
     }
 
+    /**
+     * @Groups({"user"})
+     */
     public function getEmail(): ?string
     {
         return $this->email;
@@ -54,6 +61,7 @@ class User implements UserInterface
      * A visual identifier that represents this user.
      *
      * @see UserInterface
+     * @Groups({"user"})
      */
     public function getUsername(): string
     {
