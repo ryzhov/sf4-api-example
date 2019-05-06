@@ -14,7 +14,7 @@ security:
             security: false
 
         login:
-            pattern:  ^/api/login
+            pattern:  ^/api/(login|registration)
             stateless: true
             anonymous: true
             json_login:
@@ -36,4 +36,5 @@ security:
     # Note: Only the *first* access control that matches will be used
     access_control:
         - { path: ^/api/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/api/registration, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/api,       roles: IS_AUTHENTICATED_FULLY }
