@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\DTO\UserRegistrationDto;
 use App\Mapper\DTOMapper;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
@@ -50,5 +51,17 @@ class UserController extends AbstractController
     public function login()
     {
         return $this->json(['check security configuration firewalls.login.json_login.check_path']);
+    }
+
+    /**
+     * @Route("/logout", methods={"POST"})
+     *
+     * @return \Symfony\Component\HttpFoundation\JsonResponse
+     */
+    public function logout(UserInterface $user, Request $request)
+    {
+        //TODO: put user jwt token in black list until it expired
+        $data = ['user' => $user, 'logout_at' => $request->server->get('REQUEST_TIME')];
+        return $this->json($data, Response::HTTP_OK, [], ['groups' => 'user']);
     }
 }
