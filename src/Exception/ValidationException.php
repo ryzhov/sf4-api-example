@@ -21,7 +21,7 @@ class ValidationException extends BadRequestHttpException
         foreach ($violations as $violation) {
             $this->errors[] = [
                 'message' => $violation->getMessage(),
-                'property_path' => $violation->getPropertyPath()
+                'propertyPath' => $violation->getPropertyPath()
             ];
         }
 

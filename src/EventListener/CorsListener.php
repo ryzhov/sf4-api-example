@@ -3,8 +3,8 @@
 namespace App\EventListener;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\ResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,9 +25,9 @@ class CorsListener implements EventSubscriberInterface
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param RequestEvent $event
      */
-    public function onKernelRequest(GetResponseEvent $event)
+    public function onKernelRequest(RequestEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;
@@ -42,16 +42,23 @@ class CorsListener implements EventSubscriberInterface
     }
 
     /**
-     * @param FilterResponseEvent $event
+     * @param ResponseEvent $event
      */
-    public function onKernelResponse(FilterResponseEvent $event)
+    public function onKernelResponse(ResponseEvent $event)
     {
         if (!$event->isMasterRequest()) {
             return;
         }
+
         $response = $event->getResponse();
-        $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->headers->set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
-        $response->headers->set('Access-Control-Allow-Headers', 'Accept,Authorization,Accept-Language,Content-Language,Content-Type');
+        $request = $event->getRequest();
+
+        if ('OPTIONS' === $request->getRealMethod()) {
+            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $response->headers->set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
+            $response->headers->set('Access-Control-Allow-Headers', 'Accept,Authorization,Accept-Language,Content-Language,Content-Type');
+        } else {
+            $response->headers->set('Access-Control-Allow-Origin', $request->headers->get('origin'));
+        }
     }
 }
