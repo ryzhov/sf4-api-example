@@ -36,18 +36,17 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
         $this->logger->info('ExceptionSubscriber is looking at a ' . get_class($ex));
 
-        if ($ex instanceof ValidationException) {
-            $data = $serializer->serialize(
-                ['violations' => $ex->getErrors(), 'message' => $ex->getMessage()],
-                'json'
-            );
+       if ($ex instanceof HttpException) {
+            $data = ['code' => $ex->getStatusCode(), 'message' => $ex->getMessage()];
 
-        } elseif ($ex instanceof HttpException) {
-            $data = $serializer->serialize(['message' => $ex->getMessage()], 'json');
-        } else {
-            return;
-        }
+            if ($ex instanceof ValidationException) {
+                $data['violations'] = $ex->getErrors();
+            }
+       } else {
+           return;
+       }
 
-        $event->setResponse(new JsonResponse($data, $ex->getStatusCode(), [], true));
+       $json = $serializer->serialize($data, 'json', ['json_encode_options' => JsonResponse::DEFAULT_ENCODING_OPTIONS]);
+       $event->setResponse(new JsonResponse($json, $ex->getStatusCode(), [], true));
    }
 }
