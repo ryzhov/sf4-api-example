@@ -36,8 +36,7 @@ class CorsListener implements EventSubscriberInterface
         $request = $event->getRequest();
 
         if ('OPTIONS' === $request->getRealMethod()) {
-            $response = new Response();
-            $event->setResponse($response);
+            $event->setResponse(new Response());
         }
     }
 
@@ -50,17 +49,23 @@ class CorsListener implements EventSubscriberInterface
             return;
         }
 
-        $response = $event->getResponse();
         $request = $event->getRequest();
+        $origin = $request->headers->get('origin');
+
+        if (!$origin) {
+            return;
+        }
+
+        $response = $event->getResponse();
 
         if ('OPTIONS' === $request->getRealMethod()) {
-            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $response->headers->set('Access-Control-Allow-Origin', $origin);
             $response->headers->set('Access-Control-Allow-Methods', 'GET,POST,PUT,PATCH,DELETE,OPTIONS');
             $response->headers->set('Access-Control-Allow-Headers', 'Accept,Authorization,Accept-Language,Content-Language,Content-Type');
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
         } else {
-            if ($origin = $request->headers->get('origin')) {
-                $response->headers->set('Access-Control-Allow-Origin', $origin);
-            }
+            $response->headers->set('Access-Control-Allow-Origin', $origin);
+            $response->headers->set('Access-Control-Allow-Credentials', 'true');
         }
     }
 }

@@ -3,3 +3,14 @@ lexik_jwt_authentication:
     public_key: '%env(resolve:JWT_PUBLIC_KEY)%'  # required for token verification
     pass_phrase: '%env(JWT_PASSPHRASE)%'         # required for token creation
     token_ttl:  3600
+    token_extractors:
+        # look for a token as Authorization Header
+        authorization_header:
+            enabled: true
+            prefix:  Bearer
+            name:    Authorization
+
+        # check token in a cookie
+        cookie:
+            enabled: true
+            name:    token

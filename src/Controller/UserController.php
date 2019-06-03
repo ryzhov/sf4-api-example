@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
@@ -17,11 +18,12 @@ use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\Authentica
 class UserController extends AbstractController
 {
     /**
-     * @Route("/me")
+     * @Route("/me", methods={"GET"})
      */
-    public function me(UserInterface $user): JsonResponse
+    public function me(UserInterface $user, Request $request): JsonResponse
     {
-        return $this->json(['me' => $user], Response::HTTP_OK, [], ['groups' => 'user']);
+        $token = $request->cookies->get('token');
+        return $this->json(['username' => $user->getUsername(), 'token' => $token]);
     }
 
     /**
@@ -52,10 +54,16 @@ class UserController extends AbstractController
     /**
      * @Route("/logout", methods={"POST"})
      */
-    public function logout(UserInterface $user, Request $request) : JsonResponse
+    public function logout(UserInterface $user, Request $request, RouterInterface $router) : JsonResponse
     {
-        //TODO: put user jwt token in black list until it expired
-        $data = ['user' => $user, 'logout_at' => $request->server->get('REQUEST_TIME')];
-        return $this->json($data, Response::HTTP_OK, [], ['groups' => 'user']);
+        $data = ['username' => $user->getUsername(), 'logoutAt' => $request->server->get('REQUEST_TIME')];
+
+        $path = $router->generate('app_user_me');
+        $domain = $request->server->get('HTTP_HOST');
+
+        $response = $this->json($data, Response::HTTP_OK, [], ['groups' => 'user']);
+        $response->headers->clearCookie('token', $path, $domain);
+
+        return $response;
     }
 }
